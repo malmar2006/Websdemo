@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Solicita una reserva en La Mesa de Oliva, Barcelona.">
+  <title>Reservar mesa | La Mesa de Oliva</title>
+
+  <!-- Favicon temático SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫒</text></svg>">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Reservar mesa | La Mesa de Oliva">
+  <meta property="og:description" content="Solicita tu mesa en Gràcia, Barcelona. Cocina de temporada y producto de mercado.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="La Mesa de Oliva, inicio">la mesa <span>de oliva</span></a>
+    <nav aria-label="Navegación principal">
+      <a href="index.html#carta">La carta</a>
+      <a href="index.html#visitanos">Visítanos</a>
+      <a class="button nav-button" href="#reservar">Reservar mesa</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="booking-section" id="reservar">
+      <div class="booking-copy">
+        <p class="eyebrow">Nos encantará verte</p>
+        <h1>Reserva tu<br><em>mesa.</em></h1>
+        <p>Elige el día y la hora desde el formulario web. Te contactaremos para confirmar la disponibilidad de tu mesa.</p>
+        <p><a class="phone-link" href="tel:+34931234567">¿Prefieres llamar? 931 23 45 67</a></p>
+      </div>
+      
+      <form class="booking-form" action="mailto:hola@lamesadeoliva.es" method="post" enctype="text/plain">
+        <label>
+          Nombre
+          <input name="Nombre" autocomplete="name" required placeholder="Tu nombre">
+        </label>
+        <label>
+          Teléfono
+          <input name="Teléfono" type="tel" autocomplete="tel" required placeholder="600 000 000">
+        </label>
+        <label>
+          Fecha
+          <input id="fecha-reserva" name="Fecha" type="date" required>
+        </label>
+        <label>
+          Hora
+          <select name="Hora" required>
+            <option value="" selected disabled>Elige una hora</option>
+            <option>13:00</option>
+            <option>13:30</option>
+            <option>14:00</option>
+            <option>14:30</option>
+            <option>15:00</option>
+            <option>15:30</option>
+            <option>19:30</option>
+            <option>20:00</option>
+            <option>20:30</option>
+            <option>21:00</option>
+            <option>21:30</option>
+            <option>22:00</option>
+          </select>
+        </label>
+        <label class="form-full-width">
+          Comensales
+          <select name="Comensales" required>
+            <option>1 persona</option>
+            <option selected>2 personas</option>
+            <option>3 personas</option>
+            <option>4 personas</option>
+            <option>5 personas</option>
+            <option>6 personas</option>
+            <option>Más de 6 personas (consúltanos)</option>
+          </select>
+        </label>
+        <label class="form-full-width">
+          Peticiones especiales o alergias (opcional)
+          <textarea name="Peticiones" rows="2" placeholder="Intolerancias alimentarias, necesidad de trona para bebé, preferencia de mesa..."></textarea>
+        </label>
+        <button class="button booking-submit" type="submit">Solicitar reserva <span aria-hidden="true">→</span></button>
+        <p class="booking-note">La reserva queda pendiente de confirmación. Te responderemos a la mayor brevedad. Si tu reserva es para el mismo día, te sugerimos llamarnos directamente por teléfono.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="index.html">la mesa <span>de oliva</span></a>
+    <p>Buenos ingredientes. Buena compañía. Nada más.</p>
+  </footer>
+
+  <script>
+    // Establecer la fecha mínima como el día de hoy para evitar fechas pasadas
+    const dateInput = document.getElementById('fecha-reserva');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.min = today;
+    }
+  </script>
+</body>
+</html>

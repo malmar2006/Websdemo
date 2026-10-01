@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cocina de temporada y sobremesas largas en La Mesa de Oliva, Barcelona.">
+  <title>La Mesa de Oliva | Cocina de temporada en Barcelona</title>
+
+  <!-- Favicon temático SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫒</text></svg>">
+
+  <!-- Open Graph / Redes Sociales -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="La Mesa de Oliva | Cocina de temporada">
+  <meta property="og:description" content="Cocina de temporada, producto cercano y tiempo para disfrutarlo en Gràcia, Barcelona.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="La Mesa de Oliva, inicio">la mesa <span>de oliva</span></a>
+    <nav aria-label="Navegación principal">
+      <a href="#carta">La carta</a>
+      <a href="#visitanos">Visítanos</a>
+      <a class="button nav-button" href="reserva.html">Reservar mesa</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">Barcelona · Gràcia</p>
+        <h1>La mesa está<br><em>puesta.</em></h1>
+        <p class="intro">Cocina de temporada, producto cercano y tiempo para disfrutarlo.</p>
+        <a class="button" href="#carta">Descubre la carta <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-photo">
+        <img class="hero-photo-img" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1300&q=85" alt="Mesa de restaurante preparada para una cena" fetchpriority="high">
+      </div>
+      <p class="photo-note">Una cocina sencilla, hecha con cariño.</p>
+    </section>
+
+    <section class="menu-section" id="carta">
+      <div class="section-heading">
+        <p class="eyebrow">Hecho aquí, cada día</p>
+        <h2>Un poco de nuestra carta</h2>
+      </div>
+      <div class="menu-list">
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/8633662/pexels-photo-8633662.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Pan casero de masa madre recién horneado" loading="lazy">
+          <div class="dish-copy">
+            <h3>Pan de masa madre</h3>
+            <p>Harina de trigo, masa madre, aceite de oliva virgen extra y sal marina.</p>
+          </div>
+          <span>4 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/35809590/pexels-photo-35809590.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Ensalada caprese de tomate, mozzarella y albahaca" loading="lazy">
+          <div class="dish-copy">
+            <h3>Tomate, mozzarella y albahaca</h3>
+            <p>Tomate de temporada, mozzarella fresca, albahaca y aceite de oliva.</p>
+          </div>
+          <span>12 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/6406460/pexels-photo-6406460.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Risotto cremoso de setas con bacon y cebolleta" loading="lazy">
+          <div class="dish-copy">
+            <h3>Arroz meloso de setas</h3>
+            <p>Arroz cremoso con setas, bacon crujiente y cebolleta fresca.</p>
+          </div>
+          <span>18 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/29961480/pexels-photo-29961480.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Tarta de limón servida en un plato" loading="lazy">
+          <div class="dish-copy">
+            <h3>Tarta tibia de limón</h3>
+            <p>Crema de limón, masa quebrada crujiente y ralladura de limón.</p>
+          </div>
+          <span>8 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/29286758/pexels-photo-29286758.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Croquetas doradas servidas con una salsa cremosa" loading="lazy">
+          <div class="dish-copy">
+            <h3>Croquetas de setas</h3>
+            <p>Setas de temporada, leche, mantequilla y rebozado crujiente.</p>
+          </div>
+          <span>14 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/4589138/pexels-photo-4589138.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Pollo asado con patatas en una bandeja" loading="lazy">
+          <div class="dish-copy">
+            <h3>Pollo asado con patatas</h3>
+            <p>Pollo de corral, patatas al horno, ajo, tomillo y limón.</p>
+          </div>
+          <span>19 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/36782572/pexels-photo-36782572.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Crema catalana con cubierta de azúcar caramelizado" loading="lazy">
+          <div class="dish-copy">
+            <h3>Crema catalana</h3>
+            <p>Crema de yema con canela y piel de limón, cubierta de azúcar caramelizado.</p>
+          </div>
+          <span>7 €</span>
+        </article>
+        <article class="dish">
+          <img class="dish-image" src="https://images.pexels.com/photos/7462810/pexels-photo-7462810.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Verduras asadas con pimiento y berenjena" loading="lazy">
+          <div class="dish-copy">
+            <h3>Escalivada de la huerta</h3>
+            <p>Berenjena, pimiento rojo y cebolla asados con aceite de oliva y sal marina.</p>
+          </div>
+          <span>13 €</span>
+        </article>
+      </div>
+      <p class="menu-note">La carta cambia según lo que nos trae el mercado.</p>
+    </section>
+
+    <section class="visit-section" id="visitanos">
+      <div>
+        <p class="eyebrow">Aquí nos encontrarás</p>
+        <h2>Un rincón en<br><em>Gràcia.</em></h2>
+      </div>
+      <div class="visit-details">
+        <p><strong>Dirección</strong><br><a href="https://maps.google.com/?q=Carrer+de+la+Llum+18+08012+Barcelona" target="_blank" rel="noopener noreferrer" title="Abrir ubicación en Google Maps">Carrer de la Llum, 18<br>08012 Barcelona ↗</a></p>
+        <p><strong>Horario</strong><br>Martes a domingo<br>13:00–16:00 · 19:30–23:00</p>
+        <p><strong>Contacto</strong><br><a href="tel:+34931234567">931 23 45 67</a><br><a href="mailto:hola@lamesadeoliva.es">hola@lamesadeoliva.es</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#inicio">la mesa <span>de oliva</span></a>
+    <p>Buenos ingredientes. Buena compañía. Nada más.</p>
+  </footer>
+</body>
+</html>
