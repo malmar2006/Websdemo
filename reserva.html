@@ -58,24 +58,19 @@
           <input id="fecha-reserva" name="fecha" type="date" required>
         </label>
         <label>
-          Hora
-          <select name="hora" required>
-            <option value="" selected disabled>Elige una hora</option>
-            <option>13:00</option>
-            <option>13:30</option>
-            <option>14:00</option>
-            <option>14:30</option>
-            <option>15:00</option>
-            <option>15:30</option>
-            <option>19:30</option>
-            <option>20:00</option>
-            <option>20:30</option>
-            <option>21:00</option>
-            <option>21:30</option>
-            <option>22:00</option>
+          Turno
+          <select id="turno-reserva" name="turno" required>
+            <option value="comida" selected>☀️ Turno de Comida (13:00 – 15:30)</option>
+            <option value="cena">🌙 Turno de Cena (19:30 – 22:00)</option>
           </select>
         </label>
         <label>
+          Hora
+          <select id="hora-reserva" name="hora" required>
+            <option value="" selected disabled>Cargando disponibilidad...</option>
+          </select>
+        </label>
+        <label class="form-full-width">
           Comensales
           <select name="comensales" required>
             <option>1 persona</option>
@@ -91,9 +86,16 @@
           Peticiones especiales o alergias (opcional)
           <textarea name="peticiones" rows="2" placeholder="Intolerancias alimentarias, necesidad de trona para bebé, preferencia de mesa..."></textarea>
         </label>
+
+        <!-- Mensaje de aviso cuando no hay aforo / sin espacio -->
+        <div id="booking-capacity-alert" class="booking-capacity-alert" style="display: none;"></div>
+
         <button class="button booking-submit" type="submit">Solicitar reserva <span aria-hidden="true">→</span></button>
         <div id="booking-status" class="booking-status" style="display: none;"></div>
-        <p class="booking-note">La reserva queda pendiente de confirmación. Te responderemos a la mayor brevedad. Si tu reserva es para el mismo día, te sugerimos llamarnos directamente por teléfono.</p>
+        <p class="booking-note">La reserva queda sujeta a la disponibilidad del aforo. Si tu reserva es para hoy mismo, te sugerimos llamarnos directamente por teléfono.</p>
+        <div class="capacity-reset-wrap">
+          <button type="button" id="reset-mesas-btn" class="reset-capacity-btn" title="Restablecer mesas ocupadas para volver a hacer pruebas">🔄 Restablecer mesas para pruebas</button>
+        </div>
       </form>
     </section>
   </main>
@@ -104,24 +106,166 @@
   </footer>
 
   <script>
-    // 1. Establecer la fecha mínima como el día de hoy
-    const dateInput = document.getElementById('fecha-reserva');
-    if (dateInput) {
-      const today = new Date().toISOString().split('T')[0];
-      dateInput.min = today;
-    }
+    // Configuración del aforo: número de mesas simultáneas disponibles por hora
+    const MESAS_POR_HORA = 2; // Puedes cambiar este número (ej: 2, 4, 6...)
 
-    // 2. Envío fluido mediante Formspree con soporte UTF-8 completo
+    // División de turnos
+    const TURNOS = {
+      comida: ['13:00', '13:30', '14:00', '14:30', '15:00', '15:30'],
+      cena: ['19:30', '20:00', '20:30', '21:00', '21:30', '22:00']
+    };
+
+    const dateInput = document.getElementById('fecha-reserva');
+    const turnoSelect = document.getElementById('turno-reserva');
+    const horaSelect = document.getElementById('hora-reserva');
+    const capacityAlert = document.getElementById('booking-capacity-alert');
+    const submitBtn = document.querySelector('.booking-submit');
     const form = document.querySelector('.booking-form');
     const statusDiv = document.getElementById('booking-status');
-    const submitBtn = document.querySelector('.booking-submit');
+    const resetBtn = document.getElementById('reset-mesas-btn');
 
+    // 1. Establecer fecha mínima a hoy y valor por defecto
+    const today = new Date().toISOString().split('T')[0];
+    if (dateInput) {
+      dateInput.min = today;
+      if (!dateInput.value) {
+        dateInput.value = today;
+      }
+    }
+
+    // 2. Base de datos local de reservas para controlar aforo
+    function getReservasOcupadas() {
+      try {
+        return JSON.parse(localStorage.getItem('lamesa_reservas_ocupadas') || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function registrarReservaOcupada(fecha, hora) {
+      const reservas = getReservasOcupadas();
+      const clave = `${fecha}_${hora}`;
+      reservas[clave] = (reservas[clave] || 0) + 1;
+      localStorage.setItem('lamesa_reservas_ocupadas', JSON.stringify(reservas));
+    }
+
+    // 3. Comprobar disponibilidad de mesas y actualizar desplegable
+    function actualizarDisponibilidad() {
+      const fecha = dateInput ? dateInput.value : '';
+      const turno = turnoSelect ? turnoSelect.value : 'comida';
+
+      if (!fecha) {
+        horaSelect.innerHTML = '<option value="" disabled selected>Selecciona una fecha</option>';
+        capacityAlert.style.display = 'none';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      const horas = TURNOS[turno] || [];
+      const reservas = getReservasOcupadas();
+      horaSelect.innerHTML = '<option value="" disabled selected>Elige una hora</option>';
+
+      let turnoLleno = true;
+
+      horas.forEach(h => {
+        const clave = `${fecha}_${h}`;
+        const ocupadas = reservas[clave] || 0;
+        const disponibles = MESAS_POR_HORA - ocupadas;
+
+        const opt = document.createElement('option');
+        opt.value = h;
+
+        if (disponibles <= 0) {
+          opt.disabled = true;
+          opt.textContent = `${h} — 🚫 Completo (Sin espacio)`;
+        } else {
+          turnoLleno = false;
+          const textoMesa = disponibles === 1 ? '1 mesa disponible' : `${disponibles} mesas disponibles`;
+          opt.textContent = `${h} — (${textoMesa})`;
+        }
+        horaSelect.appendChild(opt);
+      });
+
+      // Si todo el turno está completo
+      if (turnoLleno) {
+        const nombreTurno = turno === 'comida' ? 'comida' : 'cena';
+        capacityAlert.innerHTML = `⚠️ <strong>Sin espacio disponible:</strong> Lo sentimos, todas las mesas para el turno de ${nombreTurno} del día ${fecha} están ocupadas. Por favor, elige otro turno o fecha.`;
+        capacityAlert.style.display = 'block';
+        submitBtn.disabled = true;
+      } else {
+        capacityAlert.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Eventos de cambio en fecha y turno
+    if (dateInput) dateInput.addEventListener('change', actualizarDisponibilidad);
+    if (turnoSelect) turnoSelect.addEventListener('change', actualizarDisponibilidad);
+
+    if (horaSelect) {
+      horaSelect.addEventListener('change', function () {
+        const fecha = dateInput.value;
+        const hora = horaSelect.value;
+        const reservas = getReservasOcupadas();
+        const ocupadas = reservas[`${fecha}_${hora}`] || 0;
+        const disponibles = MESAS_POR_HORA - ocupadas;
+
+        if (disponibles <= 0) {
+          capacityAlert.innerHTML = `⚠️ <strong>Sin espacio disponible:</strong> Lo sentimos, no quedan mesas libres a las ${hora}. Elige otra hora que esté disponible.`;
+          capacityAlert.style.display = 'block';
+          submitBtn.disabled = true;
+        } else {
+          capacityAlert.style.display = 'none';
+          submitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Botón para restablecer pruebas y vaciar mesas
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        localStorage.removeItem('lamesa_reservas_ocupadas');
+        actualizarDisponibilidad();
+        if (statusDiv) {
+          statusDiv.className = 'booking-status booking-success';
+          statusDiv.innerHTML = '✓ Aforo restablecido. Todas las mesas vuelven a estar libres para realizar pruebas.';
+          statusDiv.style.display = 'block';
+          setTimeout(() => { statusDiv.style.display = 'none'; }, 4000);
+        }
+      });
+    }
+
+    // Inicializar al cargar la página
+    actualizarDisponibilidad();
+
+    // 4. Envío con control de aforo y Formspree
     if (form) {
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        const fecha = dateInput.value;
+        const hora = horaSelect.value;
+
+        if (!hora) {
+          capacityAlert.innerHTML = '⚠️ Por favor, selecciona una hora disponible para tu reserva.';
+          capacityAlert.style.display = 'block';
+          return;
+        }
+
+        // Comprobación de seguridad de mesas
+        const reservas = getReservasOcupadas();
+        const ocupadas = reservas[`${fecha}_${hora}`] || 0;
+        if (ocupadas >= MESAS_POR_HORA) {
+          capacityAlert.innerHTML = `⚠️ <strong>Sin espacio disponible:</strong> Lo sentimos, ya no queda espacio para las ${hora}. Por favor, selecciona otro horario.`;
+          capacityAlert.style.display = 'block';
+          submitBtn.disabled = true;
+          actualizarDisponibilidad();
+          return;
+        }
+
         submitBtn.disabled = true;
         const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = 'Enviando solicitud...';
+        submitBtn.innerHTML = 'Comprobando aforo y enviando...';
 
         const formData = new FormData(form);
 
@@ -133,12 +277,18 @@
           });
 
           if (response.ok) {
+            // Registrar mesa como ocupada para bloquearla
+            registrarReservaOcupada(fecha, hora);
+
             form.reset();
             if (dateInput) {
-              dateInput.min = new Date().toISOString().split('T')[0];
+              dateInput.min = today;
+              dateInput.value = fecha;
             }
+            actualizarDisponibilidad();
+
             statusDiv.className = 'booking-status booking-success';
-            statusDiv.innerHTML = '✓ ¡Solicitud enviada con éxito! Te contactaremos pronto para confirmar tu mesa.';
+            statusDiv.innerHTML = `✓ ¡Solicitud enviada con éxito! Mesa reservada para el ${fecha} a las ${hora}. Te responderemos pronto con la confirmación oficial.`;
             statusDiv.style.display = 'block';
             submitBtn.innerHTML = 'Solicitud enviada ✓';
           } else {
@@ -150,7 +300,8 @@
             submitBtn.innerHTML = originalText;
           }
         } catch (error) {
-          // Si falla la petición asíncrona, enviar con fallback clásico
+          // Fallback en caso de error de red
+          registrarReservaOcupada(fecha, hora);
           form.submit();
         }
       });
