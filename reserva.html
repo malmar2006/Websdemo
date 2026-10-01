@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="theme.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -27,6 +28,27 @@
       <a href="index.html#carta">La carta</a>
       <a href="index.html#visitanos">Visítanos</a>
       <a class="button nav-button" href="#reservar">Reservar mesa</a>
+      <div class="theme-selector-wrap" title="Cambiar tema de color">
+        <span class="theme-selector-label">Color:</span>
+        <div class="theme-selector">
+          <button type="button" class="theme-btn active" data-theme="oliva" title="Oliva & Terracota" aria-label="Tema Oliva y Terracota">
+            <span class="color-dot" style="background:#526b48"></span>
+            <span class="color-dot" style="background:#d46241"></span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="noche" title="Noche Esmeralda & Oro" aria-label="Tema Noche Esmeralda y Oro">
+            <span class="color-dot" style="background:#34d399"></span>
+            <span class="color-dot" style="background:#fbbf24"></span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="terracota" title="Terracota Atardecer" aria-label="Tema Terracota Atardecer">
+            <span class="color-dot" style="background:#c85a32"></span>
+            <span class="color-dot" style="background:#e67e22"></span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="cobalto" title="Azul Mediterráneo" aria-label="Tema Azul Mediterráneo">
+            <span class="color-dot" style="background:#1d6fa5"></span>
+            <span class="color-dot" style="background:#e06d34"></span>
+          </button>
+        </div>
+      </div>
     </nav>
   </header>
 
