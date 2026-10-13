@@ -19,6 +19,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+    <!-- Supabase Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Inicializar Supabase
+    const supabaseUrl = 'https://fwxxgqulzlciciakkdvy.supabase.co';
+    const supabaseAnonKey = 'sb_publishable_pwG8E1mqoO7KDRj4aB8F5A_6HaGfwTI';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -39,10 +47,7 @@
         <p><a class="phone-link" href="tel:+34931234567">¿Prefieres llamar? 931 23 45 67</a></p>
       </div>
       
-      <form class="booking-form" action="https://formspree.io/f/myezvare" method="POST" accept-charset="UTF-8">
-        <input type="hidden" name="_subject" value="Nueva solicitud de reserva - La Mesa de Oliva">
-        <!-- _replyto hace que al responder el correo vaya directamente al cliente -->
-        <input type="hidden" name="_replyto" id="hidden-replyto">
+      <form class="booking-form" method="POST" accept-charset="UTF-8">
         <label>
           Nombre
           <input name="nombre" autocomplete="name" required placeholder="Tu nombre">
@@ -95,9 +100,6 @@
         <button class="button booking-submit" type="submit">Solicitar reserva <span aria-hidden="true">→</span></button>
         <div id="booking-status" class="booking-status" style="display: none;"></div>
         <p class="booking-note">La reserva queda sujeta a la disponibilidad del aforo. Si tu reserva es para hoy mismo, te sugerimos llamarnos directamente por teléfono.</p>
-        <div class="capacity-reset-wrap">
-          <button type="button" id="reset-mesas-btn" class="reset-capacity-btn" title="Restablecer mesas ocupadas para volver a hacer pruebas">🔄 Restablecer mesas para pruebas</button>
-        </div>
       </form>
     </section>
   </main>
@@ -276,7 +278,7 @@
     // Inicializar al cargar la página
     actualizarDisponibilidad();
 
-    // 4. Envío con control de aforo y Formspree
+    // 4. Envío con control de aforo y Supabase
     if (form) {
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -303,44 +305,52 @@
 
         submitBtn.disabled = true;
         const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = 'Comprobando aforo y enviando...';
+        submitBtn.innerHTML = 'Comprobando aforo y guardando...';
 
+        // Construir el objeto de reserva para Supabase
         const formData = new FormData(form);
+        const reserva = {
+          nombre: formData.get('nombre'),
+          telefono: formData.get('telefono'),
+          email: formData.get('email'),
+          fecha: fecha,
+          turno: formData.get('turno'),
+          hora: hora,
+          comensales: parseInt(formData.get('comensales')) || 2,
+          created_at: new Date().toISOString()
+        };
 
         try {
-          const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-          });
+          // Insertar reserva en Supabase
+          const { error } = await supabase
+            .from('reservations')
+            .insert([reserva]);
 
-          if (response.ok) {
-            // Registrar mesa como ocupada para bloquearla
-            registrarReservaOcupada(fecha, hora);
-
-            form.reset();
-            if (dateInput) {
-              dateInput.min = today;
-              dateInput.value = fecha;
-            }
-            actualizarDisponibilidad();
-
-            statusDiv.className = 'booking-status booking-success';
-            statusDiv.innerHTML = `✓ ¡Solicitud enviada con éxito! Mesa reservada para el ${fecha} a las ${hora}. Te responderemos pronto con la confirmación oficial.`;
-            statusDiv.style.display = 'block';
-            submitBtn.innerHTML = 'Solicitud enviada ✓';
-          } else {
-            const data = await response.json();
-            statusDiv.className = 'booking-status booking-error';
-            statusDiv.innerHTML = data.errors ? data.errors.map(err => err.message).join(', ') : 'Hubo un error al enviar la reserva. Por favor, llámanos directamente.';
-            statusDiv.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+          if (error) {
+            throw error;
           }
-        } catch (error) {
-          // Fallback en caso de error de red
+
+          // Registrar mesa como ocupada para bloquearla
           registrarReservaOcupada(fecha, hora);
-          form.submit();
+
+          form.reset();
+          if (dateInput) {
+            dateInput.min = today;
+            dateInput.value = fecha;
+          }
+          actualizarDisponibilidad();
+
+          statusDiv.className = 'booking-status booking-success';
+          statusDiv.innerHTML = `✓ ¡Solicitud guardada en la base de datos! Mesa reservada para el ${fecha} a las ${hora}. Te responderemos pronto con la confirmación oficial.`;
+          statusDiv.style.display = 'block';
+          submitBtn.innerHTML = 'Solicitud guardada ✓';
+        } catch (error) {
+          console.error('Error al guardar reserva:', error);
+          statusDiv.className = 'booking-status booking-error';
+          statusDiv.innerHTML = `Error al guardar la reserva: ${error.message}. Por favor, contáctanos directamente. <br><br><strong>Detalle técnico:</strong> ${error.message}`;
+          statusDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
         }
       });
     }
