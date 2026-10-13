@@ -25,7 +25,7 @@
     // Inicializar Supabase
     const supabaseUrl = 'https://fwxxgqulzlciciakkdvy.supabase.co';
     const supabaseAnonKey = 'sb_publishable_pwG8E1mqoO7KDRj4aB8F5A_6HaGfwTI';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const db = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
   </script>
 </head>
 <body>
@@ -322,8 +322,8 @@
 
         try {
           // Insertar reserva en Supabase
-          const { error } = await supabase
-            .from('reservations')
+          const { error } = await db
+            .from('reservas')
             .insert([reserva]);
 
           if (error) {
